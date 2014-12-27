@@ -1,8 +1,23 @@
+from .binarytree import Node, BinarySearchTree
 ######################
 #   Red Black Tree
 ######################
 BLACK = 'black'
 RED = 'red'
+
+class RedBlackNode(Node):
+    def __init__(self, value):
+        self.color = BLACK
+        super(RedBlackNode, self).__init__(value)
+
+    @property
+    def uncle(self):
+        granny = self.grandparent
+        if granny:
+            return granny.right if granny.left == self.parent else granny.left
+        else:
+            return None
+
 
 class RedBlackTree(BinarySearchTree):
     """
@@ -20,32 +35,6 @@ class RedBlackTree(BinarySearchTree):
              \
              (60)
     """
-
-    def __init__(self, value):
-        self.color = BLACK
-        super(RedBlackTree, self).__init__(value)
-
-    def __str__(self):
-        txt = '%s:%s' % (self.color, self.value)
-        if not self.is_leaf():
-            left = str(self.left) if self.left else 'None'
-            right = str(self.right) if self.right else 'None'
-            txt += ' -> [%s | %s]' % (left, right)
-
-        return txt
-
-    def grandparent(self):
-        if self.parent and self.parent.parent:
-            return self.parent.parent
-        else:
-            return None
-
-    def uncle(self):
-        granny = self.grandparent()
-        if granny:
-            return granny.right if granny.left == self.parent else granny.left
-        else:
-            return None
 
     def insert_as_bst(self, new_node):
         if new_node.value < self.value:

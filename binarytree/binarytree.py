@@ -72,8 +72,11 @@ class Node(object):
     def is_right_child(self):
         return self.parent and self.parent.right == self
 
+    def _print_node(self):
+        return "%s" % self.value
+
     def __str__(self):
-        txt = '%s' % self.value
+        txt = '%s' % self._print_node()
         if not self.is_leaf:
             left = str(self.left) if self.left else 'None'
             right = str(self.right) if self.right else 'None'
@@ -99,25 +102,26 @@ class BinarySearchTree(object):
         else:
             return "[]"
 
-    def min(self):
-        minimum = self
-        current = self.left
+    def __contains__(self, value):
+        try:
+            self.find(value)
+        raise KeyError:
+            return False
 
-        while current:
-            minimum = current
-            current = current.left
+        return True
 
-        return minimum
+    def find(self, value):
+        current = self.root
+        while current and current.value != value:
+            if value < current.value:
+                current = current.left
+            else:
+                current = current.right
 
-    def max(self):
-        maximum = self
-        current = self.right
-
-        while current:
-            maximum = current
-            current = current.right
-
-        return maximum
+        if not current:
+            raise KeyError 
+        
+        return current
 
     def size(self):
         stack = [self]
@@ -176,17 +180,7 @@ class BinarySearchTree(object):
         2. If it has one child, substitute it by its child.
         3. If it has two children, substitute it by its in-order predecessor.
         """
-        target = self.root
-
-        # find it
-        while target and target.value != value:
-            if value < target.value:
-                target = target.left
-            else:
-                target = target.right
-
-        if not target:
-            raise KeyError 
+        target = self.find(value)
 
         if target.is_leaf:
             self._transplant(target, None)
@@ -205,109 +199,65 @@ class BinarySearchTree(object):
             in_order_predecessor.right = target.right
             self._transplant(target, in_order_predecessor)
             
-    
-# @staticmethod
-    # def is_valid_bst(node, min_val=None, max_val=None):
-    #   if min_val is None:
-    #       min_val = MIN_VAL
-    #   if max_val is None:
-    #       max_val = MAX_VAL
 
-    #   if node.value < max_val and node.value > min_val:
-    #       is_left_valid = True
-    #       if node.left:
-    #           is_left_valid = BinaryTree.is_valid_bst(node.left, min_val, node.value)
+##########################
+# Function playground
+#
+# A collection of functions on binary trees
 
-    #       is_right_valid = True
-    #       if is_left_valid and node.right:
-    #           is_right_valid = BinaryTree.is_valid_bst(node.right, node.value, max_val)
+def is_valid_bst(tree):
 
-    #       return is_left_valid and is_right_valid
+    def inspect(node, min_val=None, max_val=None):
+        if min_val is None:
+          min_val = MIN_VAL
+        if max_val is None:
+          max_val = MAX_VAL
 
-    #   else:
-    #       return False
-    # @staticmethod
-    # def serialize(output, bst):
-        
-    #   stack = []
-    #   if not bst:
-    #       return
-        
-    #   stack.append(bst)
-    #   while stack:
-    #       current = stack.pop()
-    #       output.write("%s\n" % current.value)
-    #       if current.right:
-    #           stack.append(current.right)
-    #       if current.left:
-    #           stack.append(current.left)
+        if node.value < max_val and node.value > min_val:
+          is_left_valid = True
+          if node.left:
+              is_left_valid = inspect(node.left, min_val, node.value)
 
-    # @staticmethod
-    # def deserialize(input_source):
+          is_right_valid = True
+          if is_left_valid and node.right:
+              is_right_valid = inspect(node.right, node.value, max_val)
 
-    #   value = input_source.readline()
-    #   print(value)
+          return is_left_valid and is_right_valid
 
-    #   if not value:
-    #       return None
+        else:
+          return False
 
-    #   max_value = MAX_VAL
-    #   value = input_source.readline()
-    #   root = BinarySearchTree(value)
-
-    #   _deserialize_recursively(input_source, root)
-
-    # @staticmethod
-    # def _deserialize_recursively(input_source, current_node, max_val=None):
-
-    #   if max_val is None:
-    #       max_val = MAX_VAL
-
-    #   value = input_source.readline()
-    #   print(">> %s <<" % value)
-
-    #   if value < current_node.value:
-    #       # go left
-    #       current_node.left = BinarySearchTree(value)
-    #       value = _deserialize_recursively(input_source, current_node.left, current_node.value)
-
-    #   if value < max_val:
-    #       # go right
-    #       current_node.right = BinarySearchTree(value)
-    #       value = _deserialize_recursively(input_source, current_node.right, max_val)
-
-    #   return value
+    return loop(tree.root)
         
 
-    # @staticmethod
-    # def is_balanced(node, depth=0):
-    #   """
-    #   No leaf should have height difference bigger than 1 to any other leaf.
-    #   """
-    #   max_depth = None
-    #   is_balanced = True
+def is_balanced(tree):
+    """
+    No leaf should have height difference bigger than 1 to any other leaf.
+    """
+    max_depth = None
+    is_balanced = True
 
-    #   # stack
-    #   nodes_to_visit = [(node, 0)]
+    # stack
+    nodes_to_visit = [(node, 0)]
 
-    #   while nodes_to_visit and is_balanced:
-    #       current, depth = nodes_to_visit.pop()
+    while nodes_to_visit and is_balanced:
+      current, depth = nodes_to_visit.pop()
 
-    #       if current.left:
-    #           nodes_to_visit.append((current.left, depth+1))
-    #       if current.right:
-    #           nodes_to_visit.append((current.right, depth+1))
+      if current.left:
+          nodes_to_visit.append((current.left, depth+1))
+      if current.right:
+          nodes_to_visit.append((current.right, depth+1))
 
-    #       if current.is_leaf():
-    #           if not max_depth:
-    #               max_depth = depth
-    #           else: 
-    #               if abs(depth - max_depth) > 1:
-    #                   is_balanced = False
-    #               elif depth > max_depth:
-    #                   max_depth = depth
+      if current.is_leaf():
+          if not max_depth:
+              max_depth = depth
+          else: 
+              if abs(depth - max_depth) > 1:
+                  is_balanced = False
+              elif depth > max_depth:
+                  max_depth = depth
 
-    #   return is_balanced
+    return is_balanced
 
 
 

@@ -18,11 +18,11 @@ class SortedSet(object):
             else:
                 self.tree = RedBlackTree()
 
-    def insert(value):
-        pass
+    def insert(self, value):
+        self.tree.insert(value)
 
-    def __contains__(value):
-        pass
+    def __contains__(self, value):
+        return value in self.tree
 
-    def delete(value):
-        pass
+    def delete(self, value):
+        self.tree.delete(value)
