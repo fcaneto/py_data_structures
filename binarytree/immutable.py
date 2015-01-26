@@ -1,75 +1,15 @@
-"""
-Goals:
-- learn FP style in Python.
-- Make it immutable. Make it thread-safe.
 
-What's missing:
-- add key/value to each node.
-"""
+from .binarytree import BinaryTree
+from .redblacktree import RedBlackNode
 
-import unittest
 
-RED = 'R'
-BLACK = 'B'
-class RBTNode(object):
-    
-    def __init__(self, value, color=BLACK, parent=None, left=None, right=None):
-        self.color = color
-        self.value = value
-        self.left = left
-        if left is not None:
-            left.parent = self
-        self.right = right
-        if self.right is not None:
-            self.right.parent = self
-        self.parent = parent
+class ImmutableRedBlackTree(BinaryTree):
 
-        self.depth = None
-        self.tree_depth()
+    def insert(self, value):
+        pass
 
-    @property
-    def grandparent(self):
-        return None if not self.parent else self.parent.parent
-
-    @property
-    def is_leaf(self):
-        return self.left is None and self.right is None
-
-    @property
-    def has_grandchildren(self):
-        return ((self.left and (self.left.lett or self.right.left)) 
-                or 
-                (self.right and (self.right.left or self.right.left)))
-
-    @property
-    def is_root(self):
-        return self.parent is None
-
-    @property
-    def is_red(self):
-        return self.color == RED
-
-    @property
-    def is_black(self):
-        return self.color == BLACK
-
-    # Depth Aux methods
-
-    def tree_depth(self, current_depth=1):
-        self.depth = current_depth
-
-        right_depth = current_depth if self.right is None else self.right.tree_depth(current_depth + 1)
-        left_depth = current_depth if self.left is None else self.left.tree_depth(current_depth + 1)
-        return max(right_depth, left_depth)
-
-    def __str__(self):
-        txt = '[(%s) %s' % (self.color, self.value)
-        if not self.is_leaf:
-            left = str(self.left) if self.left else 'None'
-            right = str(self.right) if self.right else 'None'
-            txt += ' -> [%s | %s]' % (left, right) 
-        txt += ']'
-        return txt
+    def delete(self, value):
+        pass
 
 
 def insert(node, value):
